@@ -4,11 +4,15 @@ NAME_ != grep "NAME_:" Config.yaml | cut -d ": " -f 2 | sed 's/^ *//'
 
 RUBY = ruby
 RUM = $(RUBY) -Ilib -r make -e
+SCM = /usr/local/bin/chibi-scheme
 
 
 all: ps
 
-html0: clean
+list:
+	$(SCM) lib/make_list.scm
+
+html0: clean list
 	touch out/tmp/.gitkeep
 	touch out/html/.gitkeep
 	cp lib/assets/blank*.pdf out/tmp/
@@ -18,7 +22,6 @@ html0: clean
 	cp lib/assets/*.svg out/html/
 	cp src/_creatures.js out/html/
 	cp src/*.svg out/html/
-	$(RUM) make_creatures
 html: html0
 	$(RUM) make_html
 h: html
