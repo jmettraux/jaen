@@ -1,0 +1,30 @@
+---
+
+NAME: jaen
+NAME_: jaen
+NAME_CAP: JaEn
+NAME_UPCASE: JAEN
+
+TITLE: JaEn
+SUBTITLE: Japanese ⇌ English TTRPG Vocabulary
+
+to_html: lowdown -Thtml --html-no-skiphtml --html-no-escapehtml ${in} -o ${out}
+
+#to_pdf: wkhtmltopdf --disable-smart-shrinking ${in} ${out}
+to_pdf: chrome --headless --no-sandbox --print-to-pdf-no-header --print-to-pdf=${out} --no-margins --disable-gpu ${in}
+#to_pdf: chrome --headless --no-sandbox --print-to-pdf-no-header --print-to-pdf=${out} --no-margins --disable-gpu --disable-features=Vulkan ${in}
+#to_pdf: chrome --headless --no-sandbox --print-to-pdf-no-header --print-to-pdf=${out} --no-margins ${in}
+to_stuffed_pdf: qpdf --empty --pages ${in} ${blanks} -- ${out}
+to_stapled_pdf: qpdf --empty --pages ${in} ${pages} -- ${out}
+
+#to_ps: pdftops -duplex ${in} ${out}
+to_ps: pdftops ${in} ${out}
+to_ps2: psnup -2 ${in} ${out}
+
+to_ps_a5: psnup -PA4 -pA5 ${in} ${out}
+to_pdf_a5: ps2pdf -dDEVICEWIDTHPOINTS=420 -dDEVICEHEIGHTPOINTS=595 -dFIXEDMEDIA -dPDFFitPage ${in} ${out}
+
+pdfinfo: pdfinfo ${in}
+
+srcsha: cat src/*.md | sha1
+

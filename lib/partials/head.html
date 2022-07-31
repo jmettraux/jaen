@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>${TITLE}</title>
+  <link href="normalize-8.0.1.css" rel="stylesheet" type="text/css" />
+  <link href="${NAME}.css" rel="stylesheet" type="text/css" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <!-- meta name="viewport" content="width=device-width, initial-scale=1" /-->
+  <!-- <script src="${NAME}.js"></script> -->
+
+  <script>
+
+    window.clog = console.log;
+
+    var onDocumentReady = function(fev) {
+      if (document.readyState != 'loading') fev();
+      else document.addEventListener('DOMContentLoaded', fev);
+    };
+
+    var elt = function(start, sel) {
+      if ( ! sel) { sel = start; start = document; }
+      return start.querySelector(sel);
+    };
+    var elts = function(start, sel) {
+      if ( ! sel) { sel = start; start = document; }
+      return Array.from(start.querySelectorAll(sel));
+    };
+
+    var isE = function(o) {
+      return (typeof o === 'object') && (typeof o.tagName === 'string');
+    };
+
+    var t = function(s) {
+      return document.createTextNode(s);
+    };
+
+    var c = function(tagName, /*atts, text*/) {
+
+      var as = Array.from(arguments);
+
+      var m = as.shift().match(/^([-a-z]+)(#[-a-z]+)?(\.[-a-z0-9.]+)?$/);
+      var tn = m[1];
+      var id = m[2]; id = id && id.slice(1);
+      var cs = (m[3] || '.').slice(1).split('.');
+      var e = document.createElement(tn);
+      if (id) e.id = id;
+      cs.forEach(function(c) { if (c.length > 0) e.classList.add(c); });
+
+      as.forEach(function(arg) {
+        if (arg === null || arg === undefined) {
+          }
+        else if (typeof arg === 'string') {
+          e.appendChild(t(arg)); }
+        else if (typeof arg.tagName === 'string') {
+          e.appendChild(arg); }
+        else if (typeof arg === 'object') {
+          Object.keys(arg).forEach(function(k) { e.setAttribute(k, arg[k]); }); }
+      });
+
+      return e;
+    };
+  </script>
+</head>
+<body>
+
