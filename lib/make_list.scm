@@ -1,18 +1,25 @@
 
 (import (scheme base) (scheme r5rs) (scheme file) (srfi 130))
 
+; TODO have a line-procs and for-each each of the proc
+;      so that trim-line can be simplified string-trim-both out...
+
 (define read-lines
-  (lambda (path)
-    (call-with-input-file
-      path
-      (lambda (p)
-        (let loop (
-          (ls '())
-          (l (read-line p))
-        )
-          (if (eof-object? l)
-            (reverse ls)
-            (loop (cons l ls) (read-line p))
+  (lambda (path . line-proc)
+    (let (
+      (lp (if (> (length line-proc) 0) (car line-proc) (lambda (l) l)))
+    )
+      (call-with-input-file
+        path
+        (lambda (p)
+          (let loop (
+            (ls '())
+            (l (read-line p))
+          )
+            (if (eof-object? l)
+              (reverse ls)
+              (loop (cons (lp l) ls) (read-line p))
+            )
           )
         )
       )
@@ -20,9 +27,19 @@
   )
 )
 
-(define read-trimmed-lines
-  (lambda (path)
-    (map string-trim-both (read-lines path))
+(define trim-line
+  (lambda (l)
+    (let (
+      (l1 (string-trim-both l))
+    )
+      (if (< (string-length l1) 2)
+        l1
+        (if (string=? (substring l1 0 2) ": ")
+          (substring l1 2)
+          l1
+        )
+      )
+    )
   )
 )
 
@@ -53,5 +70,35 @@
   )
 )
 
-(write (group (read-trimmed-lines "src/_list.md")))
+(define index
+  (lambda (gs)
+    (let loop (
+      (ja '()) (en '()) (gs1 gs)
+    )
+      (if (null? gs1)
+        (list ja en)
+        (let (
+          (g (car gs1))
+        )
+          (loop
+            (cons (cons (car g) g) ja)
+            (cons (cons (caddr g) g) en)
+            (cdr gs1)
+          )
+        )
+      )
+    )
+  )
+)
+
+(letrec (
+  (jaen (index (group (read-lines "src/_list.md" trim-line))))
+  (ja (car jaen))
+  (en (cadr jaen))
+)
+  (display "\nja:\n")
+  (write ja)
+  (display "\nen:\n")
+  (write en)
+)
 
