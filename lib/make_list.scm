@@ -1,5 +1,9 @@
 
-(import (scheme base) (scheme r5rs) (scheme file) (srfi 130))
+(import
+  (scheme base)
+  (scheme r5rs)
+  (scheme file)
+  (srfi 130))
 
 ; TODO have a line-procs and for-each each of the proc
 ;      so that trim-line can be simplified string-trim-both out...
@@ -96,9 +100,11 @@
   (ja (car jaen))
   (en (cadr jaen))
 )
-  (display "\nja:\n")
-  (write ja)
-  (display "\nen:\n")
-  (write en)
+  (call-with-output-file "src/laa__enja.md" (lambda (enjap)
+  (call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
+    (write ja jaenp)
+    (write en enjap)
+  ))
+  ))
 )
 
