@@ -3,6 +3,7 @@
   (scheme base)
   (scheme r5rs)
   (scheme file)
+  (srfi 95)
   (srfi 130))
 
 ; TODO have a line-procs and for-each each of the proc
@@ -96,9 +97,12 @@
 )
 
 (letrec (
+
   (jaen (index (group (read-lines "src/_list.md" trim-line))))
-  (ja (car jaen))
-  (en (cadr jaen))
+
+  (car-sort (lambda (a b) (string<? (car a) (car b))))
+  (ja (sort (car jaen)) car-sort)
+  (en (sort (cadr jaen)) car-sort)
 )
   (call-with-output-file "src/laa__enja.md" (lambda (enjap)
   (call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
