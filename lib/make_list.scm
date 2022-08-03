@@ -7,6 +7,15 @@
   (srfi 95)
   (srfi 130))
 
+;(define fold-left
+;  (lambda (kons knil ls)
+;    (let lp (
+;      (ls ls) (acc knil)
+;    )
+;      (if (pair? ls) (lp (cdr ls) (kons acc (car ls))) acc)
+;    )
+;  )
+;)
 
 (define read-lines
   (lambda (path . line-procs)
@@ -19,10 +28,11 @@
         )
           (if (eof-object? l)
             (reverse ls)
-            ;(loop (cons (lp l) ls) (read-line p))
             (let (
               (l1 (fold (lambda (f r)
                 (f r)) l line-procs))
+              ;(l1 (fold-left (lambda (r f)
+              ;  (f r)) l line-procs))
             )
               (loop (cons l1 ls) (read-line p))
             )
