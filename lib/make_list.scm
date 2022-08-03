@@ -3,27 +3,28 @@
   (scheme base)
   (scheme r5rs)
   (scheme file)
+  (srfi 1)
   (srfi 95)
   (srfi 130))
 
-; TODO have a line-procs and for-each each of the proc
-;      so that trim-line can be simplified string-trim-both out...
 
 (define read-lines
-  (lambda (path . line-proc)
-    (let (
-      (lp (if (> (length line-proc) 0) (car line-proc) (lambda (l) l)))
-    )
-      (call-with-input-file
-        path
-        (lambda (p)
-          (let loop (
-            (ls '())
-            (l (read-line p))
-          )
-            (if (eof-object? l)
-              (reverse ls)
-              (loop (cons (lp l) ls) (read-line p))
+  (lambda (path . line-procs)
+    (call-with-input-file
+      path
+      (lambda (p)
+        (let loop (
+          (ls '())
+          (l (read-line p))
+        )
+          (if (eof-object? l)
+            (reverse ls)
+            ;(loop (cons (lp l) ls) (read-line p))
+            (let (
+              (l1 (fold (lambda (f r)
+                (f r)) l line-procs))
+            )
+              (loop (cons l1 ls) (read-line p))
             )
           )
         )
@@ -32,17 +33,14 @@
   )
 )
 
-(define trim-line
-  (lambda (l)
-    (let (
-      (l1 (string-trim-both l))
-    )
-      (if (< (string-length l1) 2)
-        l1
-        (if (string=? (substring l1 0 2) ": ")
-          (substring l1 2)
-          l1
-        )
+(define trim-colon-space
+  (lambda (s)
+    (if
+      (< (string-length s) 2)
+      s
+      (if (string=? (substring s 0 2) ": ")
+        (substring s 2)
+        s
       )
     )
   )
@@ -98,17 +96,22 @@
 
 (letrec (
 
-  (jaen (index (group (read-lines "src/_list.md" trim-line))))
+  (jaen
+    (index
+      (group
+        (read-lines "src/_list.md" string-trim-both trim-colon-space))))
 
   (car-sort (lambda (a b) (string<? (car a) (car b))))
   (ja (sort (car jaen)) car-sort)
   (en (sort (cadr jaen)) car-sort)
 )
-  (call-with-output-file "src/laa__enja.md" (lambda (enjap)
-  (call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
-    (write ja jaenp)
-    (write en enjap)
-  ))
-  ))
+  (write ja) (newline)
+  (write en) (newline)
+  ;(call-with-output-file "src/laa__enja.md" (lambda (enjap)
+  ;(call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
+  ;  (write ja jaenp)
+  ;  (write en enjap)
+  ;))
+  ;))
 )
 
