@@ -4,7 +4,7 @@ NAME_ != grep "NAME_:" Config.yaml | cut -d ": " -f 2 | sed 's/^ *//'
 
 RUBY = ruby
 RUM = $(RUBY) -Ilib -r make -e
-SCM = /usr/local/bin/chibi-scheme
+SCM = /usr/local/bin/gosh
 
 
 all: ps

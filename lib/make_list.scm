@@ -1,11 +1,13 @@
 
 (import
+  (r7rs-setup)
   (scheme base)
   (scheme r5rs)
   (scheme file)
   (srfi 1)
   (srfi 95)
-  (srfi 130))
+  (srfi 130)
+)
 
 ;(define fold-left
 ;  (lambda (kons knil ls)
@@ -23,8 +25,8 @@
       path
       (lambda (p)
         (let loop (
-          (ls '())
-          (l (read-line p))
+          [ls '()]
+          [l (read-line p)]
         )
           (if (eof-object? l)
             (reverse ls)
@@ -48,8 +50,8 @@
     (if
       (< (string-length s) 2)
       s
-      (if (string=? (substring s 0 2) ": ")
-        (substring s 2)
+      (if (string=? (string-copy s 0 2) ": ")
+        (string-copy s 2)
         s
       )
     )
@@ -59,12 +61,12 @@
 (define group
   (lambda (ls)
     (let loop (
-      (ls1 ls) (gs '()) (g '())
+      [ls1 ls] [gs '()] [g '()]
     )
       (if (null? ls1)
         gs
         (let (
-          (l (car ls1))
+          [l (car ls1)]
         )
           (if (string=? l "")
             ; THEN add group if not empty; loop
@@ -86,7 +88,7 @@
 (define index
   (lambda (gs)
     (let loop (
-      (ja '()) (en '()) (gs1 gs)
+      [ja '()] [en '()] [gs1 gs]
     )
       (if (null? gs1)
         (list ja en)
@@ -106,14 +108,14 @@
 
 (letrec (
 
-  (jaen
+  [jaen
     (index
       (group
-        (read-lines "src/_list.md" string-trim-both trim-colon-space))))
+        (read-lines "src/_list.md" string-trim-both trim-colon-space)))]
 
-  (car-sort (lambda (a b) (string<? (car a) (car b))))
-  (ja (sort (car jaen)) car-sort)
-  (en (sort (cadr jaen)) car-sort)
+  [car-sort (lambda (a b) (string<? (car a) (car b)))]
+  [ja (sort (car jaen) car-sort)] ; sort by Hiragana?
+  [en (sort (cadr jaen) car-sort)]
 )
   (write ja) (newline)
   (write en) (newline)
