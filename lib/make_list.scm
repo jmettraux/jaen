@@ -5,6 +5,7 @@
   (scheme r5rs)
   (scheme file)
   (srfi 1)
+  (srfi 28)
   (srfi 95)
   (srfi 130)
 )
@@ -31,10 +32,10 @@
           (if (eof-object? l)
             (reverse ls)
             (let (
-              (l1 (fold (lambda (f r)
-                (f r)) l line-procs))
-              ;(l1 (fold-left (lambda (r f)
-              ;  (f r)) l line-procs))
+              [l1 (fold (lambda (f r)
+                (f r)) l line-procs)]
+              ;[l1 (fold-left (lambda (r f)
+              ;  (f r)) l line-procs)]
             )
               (loop (cons l1 ls) (read-line p))
             )
@@ -117,13 +118,26 @@
   [ja (sort (car jaen) car-sort)] ; sort by Hiragana?
   [en (sort (cadr jaen) car-sort)]
 )
-  (write ja) (newline)
-  (write en) (newline)
-  ;(call-with-output-file "src/laa__enja.md" (lambda (enjap)
-  ;(call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
-  ;  (write ja jaenp)
-  ;  (write en enjap)
-  ;))
-  ;))
+
+  ;(write en) (newline)
+  ;(write ja) (newline)
+
+  (call-with-output-file "src/laa__enja.md" (lambda (enjap)
+    (newline enjap)
+    (for-each
+      (lambda (e)
+        (format enjap "~a\n" (car e))
+        (format enjap ": ~a\n" (cadr e))
+        (format enjap ": ~a\n" (caddr e))
+        (for-each (lambda (ee) (format enjap ": ~a\n" ee)) (cddddr e))
+        (newline enjap)
+      )
+      en
+    )
+  ))
+
+  (call-with-output-file "src/lzz__jaen.md" (lambda (jaenp)
+    (write ja jaenp)
+  ))
 )
 
